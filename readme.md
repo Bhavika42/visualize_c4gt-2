@@ -36,3 +36,20 @@ for i in range(0, num_episodes):
     entity_property = "consumers/money_spent",
   )
 ```
+### 📌 Explanation of Parameters in `geoplot.visualize(...)`
+
+| Parameter          | Description |
+|-------------------|-------------|
+| `name`  | A string specifying the **file name** for the generated GeoPlot visualization. |
+| `state_trajectory` | The complete **state history** of the simulation. Used to track movement over time. |
+| `entity_position` | The **path in the simulation state** where the entity’s coordinates (latitude, longitude) are stored. |
+| `entity_property` | The **path in the simulation state** where the **property to visualize** is stored (e.g., money spent, distance traveled). |
+
+🔹 **Example Use Case:**  
+If you want to track how **consumers’ money spent** changes **over time** in the simulation,  
+you will set `entity_property = "consumers/money_spent"`.  
+
+
+
+
+
