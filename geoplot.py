@@ -55,14 +55,35 @@ geoplot_template = """
 			href="https://cesium.com/downloads/cesiumjs/releases/1.95/Build/Cesium/Widgets/widgets.css"
 			rel="stylesheet"
 		/>
+                
 		<style>
+                /* Fullscreen Responsive Map */
 			#cesiumContainer {
-				width: 100%;
-				height: 100%;
+                                width: 100vw;
+                                height: 100vh;
+                                background-color: #1e1e2e; /* Dark mode background */
+                                border-radius: 10px;
+                                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 			}
+              /* Custom Loading Spinner */
+                       #loading {
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                font-size: 18px;
+                                color: white;
+                                font-family: Arial, sans-serif;
+                                background: rgba(0, 0, 0, 0.7);
+                                padding: 10px 20px;
+                                border-radius: 8px;
+                                display: block;
+                       }
+   
 		</style>
 	</head>
 	<body>
+                <div id="loading">Loading 3D Visualization...</div>
 		<div id="cesiumContainer"></div>
 		<script>
 			// Your Cesium ion access token here
@@ -207,6 +228,11 @@ geoplot_template = """
 				viewer.dataSources.add(dataSource)
 				viewer.zoomTo(dataSource)
 			}
+                     // Hide loading spinner after map is loaded
+                    viewer.scene.postRender.addEventListener(() => {
+                        document.getElementById('loading').style.display = 'none';
+                    });
+
 		</script>
 	</body>
 </html>
