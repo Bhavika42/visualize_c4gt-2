@@ -2,6 +2,11 @@
 geoplot.py
 ----------
 
+This module generates a 3D visualization of simulation data using Cesium Ion.
+It processes simulation state history and creates an interactive plot.
+"""
+
+
 This visualization renders a 3-D plot of the data given the state
 trajectory of a simulation, and the path of the property to render.
 
@@ -218,7 +223,29 @@ def read_var(state, var):
 
 
 class GeoPlot:
-    def __init__(self, config, options):
+
+    """
+    A class to generate 3D GeoPlot visualizations using Cesium Ion.
+
+    Attributes:
+    - config (dict): Configuration settings for the visualization.
+    - cesium_token (str): API token required to render maps using Cesium Ion.
+    """
+
+    def __init__(self, config: dict, options: dict):
+        """
+        Initializes the GeoPlot object.
+
+        Parameters:
+        - config (dict): Visualization configuration settings.
+        - options (dict): Dictionary containing:
+            - "cesium_token" (str): API token for Cesium Ion.
+            - "step_time" (int): Time step between each visualization frame.
+            - "coordinates" (str): Path to entity coordinates in simulation data.
+            - "feature" (str): Path to property being visualized.
+            - "visualization_type" (str): Determines if visualization is based on "color" or "size".
+        """
+
         self.config = config
         (
             self.cesium_token,
@@ -234,11 +261,29 @@ class GeoPlot:
             options["visualization_type"],
         )
 
-    def render(self, state_trajectory):
+    def render(self, state_trajectory: list):
+        """
+        Processes the simulation state trajectory and generates visualization files.
+
+        Steps:
+        1. Extracts geographic coordinates (`entity_position`) and property values (`entity_property`).
+        2. Generates timestamps for simulation steps.
+        3. Creates a GeoJSON dataset with the simulation data.
+        4. Writes the `.geojson` file.
+        5. Generates an `.html` file for visualization using Cesium.
+
+        Parameters:
+        - state_trajectory (list): A list containing the simulation state history.
+
+        Returns:
+        - None (Creates `.geojson` & `.html` visualization files).
+        """
+
         coords, values = [], []
         name = self.config["simulation_metadata"]["name"]
         geodata_path, geoplot_path = f"{name}.geojson", f"{name}.html"
 
+# Step 1: Extract coordinates & property values from state trajectory
         for i in range(0, len(state_trajectory) - 1):
             final_state = state_trajectory[i][-1]
 
@@ -246,7 +291,7 @@ class GeoPlot:
             values.append(
                 np.array(read_var(final_state, self.entity_property)).flatten().tolist()
             )
-
+# Step 2: Generate timestamps for each simulation step
         start_time = pd.Timestamp.utcnow()
         timestamps = [
             start_time + pd.Timedelta(seconds=i * self.step_time)
@@ -255,7 +300,7 @@ class GeoPlot:
                 * self.config["simulation_metadata"]["num_steps_per_episode"]
             )
         ]
-
+ # Step 3: Create a GeoJSON dataset for visualization
         geojsons = []
         for i, coord in enumerate(coords):
             features = []
@@ -274,10 +319,10 @@ class GeoPlot:
                     }
                 )
             geojsons.append({"type": "FeatureCollection", "features": features})
-
+# Step 4: Save GeoJSON data to file
         with open(geodata_path, "w", encoding="utf-8") as f:
             json.dump(geojsons, f, ensure_ascii=False, indent=2)
-
+# Step 5: Generate HTML file with Cesium visualization
         tmpl = Template(geoplot_template)
         with open(geoplot_path, "w", encoding="utf-8") as f:
             f.write(
