@@ -49,6 +49,28 @@ for i in range(0, num_episodes):
 If you want to track how **consumers’ money spent** changes **over time** in the simulation,  
 you will set `entity_property = "consumers/money_spent"`.  
 
+## 📌 Generating the GeoPlot Visualization  
+
+The `GeoPlot.visualize()` function generates a **3D visualization** using **Cesium Ion** and **GeoJSON data**.  
+To see the output, follow these steps:  
+
+### 🔹 How to Generate the Visualization  
+1. Run the following Python script:  
+   ```python
+   from agent_torch.visualize import GeoPlot
+
+   # Create a GeoPlot instance
+   geoplot = GeoPlot(config, cesium_token)
+
+   # Run the simulation and generate visualization
+   geoplot.visualize(
+       name = "sample-visualization",
+       state_trajectory = runner.state_trajectory,
+       entity_position = "consumers/coordinates",
+       entity_property = "consumers/money_spent",
+   )
+
+
 
 
 
